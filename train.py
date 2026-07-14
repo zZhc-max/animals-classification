@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
     best_acc = 0.737  # 继承之前的最高准确率
 
-    for epoch in range(150, 400):  # 从第31轮继续，训练到50轮
+    for epoch in range(0, 400):  # 从第31轮继续，训练到50轮
 
         # train
         net.train()  # 在训练过程中调用dropout方法
