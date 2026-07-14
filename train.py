@@ -54,7 +54,14 @@ if __name__ == '__main__':
         net.load_state_dict(torch.load(pre_train_model, map_location=device))
         print(f"已加载预训练模型: {pre_train_model}")
 
-    best_acc = 0.737  # 继承之前的最高准确率
+    # 加载之前训练的最佳准确率
+    best_acc_path = os.path.join(os.path.dirname(__file__), 'best_acc.json')
+    if os.path.exists(best_acc_path):
+        with open(best_acc_path, 'r') as f:
+            best_acc = json.load(f)['best_acc']
+        print(f"已加载历史最佳准确率: {best_acc}")
+    else:
+        best_acc = 0.0
 
     for epoch in range(0, 400):  # 从第31轮继续，训练到50轮
 
@@ -101,6 +108,8 @@ if __name__ == '__main__':
             if accurate_test > best_acc:
                 best_acc = accurate_test
                 torch.save(net.state_dict(), save_path)
+                with open(best_acc_path, 'w') as f:
+                    json.dump({'best_acc': best_acc}, f)
             print('\n[epoch %d] trainset_acc:%.3f train_loss: %.3f  testset_accuracy: %.3f best_acc: %.3f one_epoch_time:%.3fs\n' %
                   (epoch + 1, tra_acc/tra_num, running_loss / step, accurate_test,best_acc,one_epoch_time))
             pre_write_txt("epoch:{} trainset_acc:{:.3f} train_loss:{:.3f} testset_accuracy: {:.3f} best_acc: {:.3f}".format(epoch + 1, tra_acc/tra_num, running_loss / step, accurate_test,best_acc), file = os.path.join(os.path.dirname(__file__), 'result.txt'))
